@@ -1,10 +1,12 @@
-import flwr as fl
-import torch
 from collections import OrderedDict
-from flwr.common import NDArrays, Scalar
 from typing import Dict
 
-from model import Net, train, test
+import flwr as fl
+import torch
+from flwr.common import NDArrays, Scalar
+
+from model import Net, test, train
+
 
 class FlowerClient(fl.client.NumPyClient):
     def __init__(self,
@@ -42,7 +44,7 @@ class FlowerClient(fl.client.NumPyClient):
         # do local training
         train(self.model, self.trainloader, optimizer, epochs, self.device)
 
-        return self.get_parameters(), len(self.trainloader.dataset), {}
+        return self.get_parameters(config), len(self.trainloader.dataset), {}
     
     def evaluate(self, parameters: NDArrays, config: Dict[str, Scalar]):
         # copy parameters sent by the server to the local model

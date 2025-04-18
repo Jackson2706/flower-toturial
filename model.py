@@ -1,16 +1,17 @@
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
+
 
 class Net(nn.Module):
-    def __init__(self, num classes: int):
+    def __init__(self, num_classes: int):
         super(Net, self).__init__()
-    self.conv1 = nn.Conv2d(1,6,5)
-    self.pool = nn.MaxPool2d(2,2)
-    self.conv2 = nn.Conv2d(6,16,5)
-    self.fc1 = nn.Linear(16 * 4 * 4, 120)
-    self.fc2 = nn.Linear(120, 84)
-    self.fc3 = nn.Linear(84, num_classes)
+        self.conv1 = nn.Conv2d(1,6,5)
+        self.pool = nn.MaxPool2d(2,2)
+        self.conv2 = nn.Conv2d(6,16,5)
+        self.fc1 = nn.Linear(16 * 4 * 4, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, num_classes)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
@@ -23,6 +24,7 @@ class Net(nn.Module):
     
 def train(model, trainloader, optimizer, num_epochs, device):
     model.train()
+    model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     for epoch in range(num_epochs):
         for batch_idx, (data, target) in enumerate(trainloader):
@@ -39,7 +41,7 @@ def test(model, testloader, device):
     total = 0
     loss = 0
     criterion = nn.CrossEntropyLoss()
-
+    model = model.to(device)
     with torch.no_grad():
         for data, target in testloader:
             data, target = data.to(device), target.to(device)
